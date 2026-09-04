@@ -1,0 +1,170 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &317103941538955195
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_Name
+      value: Onion_Whole
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      propertyPath: m_TagString
+      value: Fruit
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2333349549210041984}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4381987350700464042}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8486440235154541352}
+  m_SourcePrefab: {fileID: 100100000, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+--- !u!1 &623745847733191402 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c1cfe1a14b440134ebd6289ed9ad65a5, type: 3}
+  m_PrefabInstance: {fileID: 317103941538955195}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &2333349549210041984
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623745847733191402}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0.1
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 2
+--- !u!135 &4381987350700464042
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623745847733191402}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.05
+  m_Center: {x: -0.000274783, y: -0.00074826926, z: -0.00021864474}
+--- !u!114 &8486440235154541352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 623745847733191402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a926e8c0ff115b5458f3bc1eff31eb1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fruit
+  slicedFruitPrefab: {fileID: 4036330411815283053, guid: df415716b9a5ae84f8d91665d1ad0a13, type: 3}
+  splashEffectPrefab: {fileID: 6031072768427354114, guid: 803d7ffb2ef6dd748a8a1ae9d9a2fd0f, type: 3}
+  splashColor: {r: 0.3647059, g: 0.18823531, b: 0.32941177, a: 1}
+  explosionForce: 150
+  explosionRadius: 3
+  scoreValue: 25
+  isSpecialFruit: 0
+  destroyYBoundary: -6
+  safeTimeBeforeCheckDrop: 0.5

@@ -1,0 +1,54 @@
+# ==========================================
+# Unity Ignored Folders & Files
+# ==========================================
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ibrary/
+/[Ll]ogs/
+/[Mm]emoryCaptures/
+/[Oo]bj/
+/[Pp]rojectSettings/ProjectVersion.txt
+/[Pp]ackages/packages-lock.json
+/[Rr]ecordings/
+/[Tt]emp/
+/[Uu]serSettings/
+
+# Auto-generated VS/VSCode/Rider files
+/.vs/
+/.idea/
+/*.csproj
+/*.unityproj
+/*.sln
+/*.suo
+/*.user
+/*.userprefs
+/*.pidb
+/*.booproj
+/*.svd
+/*.pdb
+/*.opendb
+/*.VC.db
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+sysinfo.txt
+
+# ==========================================
+# Rule cho Multi-Project (Áp dụng cho mọi sub-folder)
+# ==========================================
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Oo]bj/
+**/[Bb]uild/
+**/[Bb]uilds/
+**/[Ll]ogs/
+**/[Uu]serSettings/
+**/[Mm]emoryCaptures/
+**/.vs/
+**/.idea/
+**/*.csproj
+**/*.sln
