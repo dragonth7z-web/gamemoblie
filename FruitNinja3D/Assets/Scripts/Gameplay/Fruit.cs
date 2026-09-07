@@ -87,6 +87,9 @@ public class Fruit : MonoBehaviour
         {
             float angle = Mathf.Atan2(blade.direction.y, blade.direction.x) * Mathf.Rad2Deg;
             sliceRotation = Quaternion.Euler(0f, 0f, angle);
+
+            // ✨ KÍCH HOẠT VÀ TÍNH TOÁN BỘ ĐẾM COMBO TRÊN LƯỠI DAO
+            blade.OnSliceFruit();
         }
         else
         {
@@ -101,7 +104,7 @@ public class Fruit : MonoBehaviour
             AudioManager.Instance.PlayCutSound();
         }
 
-        // 2. HIỆU ỨNG NƯỚC BẮN (Đã tối ưu loại bỏ GetComponentsInChildren)
+        // 2. HIỆU ỨNG NƯỚC BẮN
         SpawnJuiceSplash(slicePosition, sliceRotation);
 
         // 3. TẠO & PHÂN TÁCH 2 NỬA QUẢ
@@ -124,7 +127,6 @@ public class Fruit : MonoBehaviour
 
         GameObject splash = Instantiate(splashEffectPrefab, position, rotation);
 
-        // ✅ TỐI ƯU: Chỉ chỉnh màu cho Particle System chính (nếu có), tránh dùng GetComponentsInChildren
         ParticleSystem ps = splash.GetComponent<ParticleSystem>();
         if (ps != null)
         {

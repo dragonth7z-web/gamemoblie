@@ -23,6 +23,14 @@ public class Blade : MonoBehaviour
     
     private float lastSwishTime = 0f;
 
+    [Header("Cài đặt Combo & Âm thanh Combo")]
+    [Tooltip("Thời gian chờ tối đa giữa các lần chém để giữ chuỗi Combo (giây)")]
+    [SerializeField] private float comboTimeout = 0.8f;
+    
+    private float comboTimer = 0f;
+    private bool isComboActive = false;
+    private int comboCount = 0;
+
     [Header("Cài đặt Hiệu ứng Vệt chém (Trail & Sparkles)")]
     [Tooltip("Danh sách màu (Nếu bỏ trống, C# sẽ tự sinh 4 màu chuẩn phát sáng)")]
     [SerializeField] private Gradient[] trailGradients;
@@ -44,7 +52,6 @@ public class Blade : MonoBehaviour
         bladeRigidbody.interpolation = RigidbodyInterpolation.None;
         bladeCollider.isTrigger = true;
 
-        // ✅ Tự tạo bộ dải màu chuẩn phát sáng nếu Inspector chưa cài đặt chuẩn
         InitDefaultGradients();
     }
 
@@ -53,8 +60,8 @@ public class Blade : MonoBehaviour
         if (trailGradients == null || trailGradients.Length == 0)
         {
             trailGradients = new Gradient[4];
-            trailGradients[0] = CreateGlowGradient(Color.cyan, Color.white);                 // Xanh Neon
-            trailGradients[1] = CreateGlowGradient(Color.red, Color.yellow);                // Đỏ Vàng
+            trailGradients[0] = CreateGlowGradient(Color.cyan, Color.white);               // Xanh Neon
+            trailGradients[1] = CreateGlowGradient(Color.red, Color.yellow);               // Đỏ Vàng
             trailGradients[2] = CreateGlowGradient(new Color(1f, 0f, 0.5f), Color.white);   // Hồng Huỳnh Quang
             trailGradients[3] = CreateGlowGradient(Color.green, Color.yellow);              // Xanh Lá
         }
@@ -106,6 +113,18 @@ public class Blade : MonoBehaviour
         {
             UpdateSlicing();
         }
+
+        // ✨ XỬ LÝ ĐẾM NGƯỢC THỜI GIAN COMBO
+        if (isComboActive)
+        {
+            comboTimer -= Time.deltaTime;
+
+            // Nếu quá thời gian comboTimeout mà không chém thêm trái cây -> Kết thúc Combo & Ngắt âm thanh lập tức
+            if (comboTimer <= 0f)
+            {
+                EndCombo();
+            }
+        }
     }
 
     private void StartSlicing()
@@ -120,7 +139,6 @@ public class Blade : MonoBehaviour
 
         if (bladeTrail != null)
         {
-            // ✅ BƯỚC QUAN TRỌNG: Tắt & Clear điểm cũ TRƯỚC khi đổi màu mới
             bladeTrail.enabled = false;
             bladeTrail.Clear();
 
@@ -154,6 +172,9 @@ public class Blade : MonoBehaviour
         {
             bladeSparkles.Stop();
         }
+
+        // ✨ Dừng hành động chém/buông tay -> Tắt âm thanh Combo ngay lập tức
+        EndCombo();
     }
 
     private void UpdateSlicing()
@@ -181,6 +202,34 @@ public class Blade : MonoBehaviour
 
         transform.position = newPosition;
         bladeRigidbody.position = newPosition;
+    }
+
+    // ✨ GỌI HÀM NÀY TỪ SCRIPT TRÁI CÂY (Fruit.cs / SliceManager.cs) MỖI KHI CHÉM TRÚNG 1 TRÁI CÂY
+    public void OnSliceFruit()
+    {
+        comboCount++;
+        comboTimer = comboTimeout; // Reset lại bộ đếm thời gian cho đợt chém tiếp theo
+
+        // Khi chém liên tiếp từ 2 trái cây trở lên -> Kích hoạt nhạc Combo chạy lặp
+        if (comboCount >= 2)
+        {
+            isComboActive = true;
+            AudioManager.Instance?.PlayComboLoop();
+        }
+    }
+
+    // ✨ NGẮT VÀ RESET TRẠNG THÁI COMBO
+    private void EndCombo()
+    {
+        if (isComboActive || comboCount > 0)
+        {
+            isComboActive = false;
+            comboCount = 0;
+            comboTimer = 0f;
+
+            // Dừng ngay lập tức âm thanh Combo
+            AudioManager.Instance?.StopComboSound();
+        }
     }
 
     private Vector3 GetMouseWorldPosition()

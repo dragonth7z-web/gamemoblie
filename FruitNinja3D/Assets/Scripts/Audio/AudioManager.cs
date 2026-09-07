@@ -7,7 +7,7 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     public AudioSource musicSource;
     public AudioSource sfxSource;
-    public AudioSource comboSource; // ✨ Thêm AudioSource riêng biệt cho Combo SFX
+    public AudioSource comboSource; // AudioSource riêng quản lý Combo SFX
 
     [Header("Audio Clips - Music")]
     public AudioClip menuMusic;
@@ -66,7 +66,7 @@ public class AudioManager : MonoBehaviour
     public void PlayGameOverMusic()
     {
         StopComboSound();
-    StopSFX();
+        StopSFX();
         PlayMusicClip(gameOverMusic, false, true);
     }
 
@@ -90,7 +90,7 @@ public class AudioManager : MonoBehaviour
     public void StopSFX()
     {
         if (sfxSource != null) sfxSource.Stop();
-        StopComboSound(); // Dừng luôn cả âm thanh Combo khi gọi ngắt SFX
+        StopComboSound();
     }
 
     // -------------------------------------------------------------
@@ -129,17 +129,24 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // ✨ QUẢN LÝ RIÊNG ÂM THANH COMBO
-    public void PlayComboSound()
+    // -------------------------------------------------------------
+    // QUẢN LÝ RIÊNG ÂM THANH COMBO (HỖ TRỢ LOOP VÀ NGẮT TỨC THÌ)
+    // -------------------------------------------------------------
+    
+    // Phát nhạc Combo liên tục khi người chơi đang duy trì chuỗi chém
+    public void PlayComboLoop()
     {
         if (comboSound == null) return;
 
-        // Nếu có comboSource riêng, phát trực tiếp để dễ quản lý ngắt
         if (comboSource != null)
         {
-            comboSource.clip = comboSound;
-            comboSource.pitch = 1.0f;
-            comboSource.Play(); // Dùng Play() thay vì PlayOneShot() để có thể ngắt bất kỳ lúc nào
+            if (!comboSource.isPlaying)
+            {
+                comboSource.clip = comboSound;
+                comboSource.loop = true; // Cho phép chạy ngầm liên tục không bị đứt đoạn
+                comboSource.pitch = 1.0f;
+                comboSource.Play();
+            }
         }
         else if (sfxSource != null)
         {
@@ -147,12 +154,31 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // ✨ Hàm ngắt lập tức âm thanh Combo khi hết lượt chém/đủ điều kiện ngắt
+    // Phát 1 lần ngắn nếu chỉ đạt mốc Combo tiêu chuẩn
+    public void PlayComboSound()
+    {
+        if (comboSound == null) return;
+
+        if (comboSource != null)
+        {
+            comboSource.clip = comboSound;
+            comboSource.loop = false;
+            comboSource.pitch = 1.0f;
+            comboSource.Play();
+        }
+        else if (sfxSource != null)
+        {
+            sfxSource.PlayOneShot(comboSound);
+        }
+    }
+
+    // Dừng âm thanh Combo NGAY LẬP TỨC
     public void StopComboSound()
     {
         if (comboSource != null && comboSource.isPlaying)
         {
             comboSource.Stop();
+            comboSource.loop = false;
         }
     }
 
