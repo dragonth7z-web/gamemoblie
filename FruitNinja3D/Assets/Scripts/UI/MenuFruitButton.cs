@@ -7,6 +7,10 @@ public class MenuFruitButton : MonoBehaviour
     [Header("Sự kiện khi bị chém")]
     public UnityEvent onSliced;
 
+    [Header("Thời gian hoãn hành động")]
+    [Tooltip("Khoảng thời gian (giây) chờ hiệu ứng cắt/âm thanh chạy xong trước khi kích hoạt onSliced")]
+    public float actionDelay = 0.5f;
+
     [Header("Hiệu Ứng VFX & Prefab")]
     public GameObject slicedPrefab;
     public GameObject splashVFX;
@@ -32,7 +36,7 @@ public class MenuFruitButton : MonoBehaviour
 
         isSliced = true;
 
-        // 1. Phát âm thanh chém trúng quả (Đã sửa từ PlaySliceSound thành PlayCutSound)
+        // 1. Phát âm thanh chém trúng quả
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlayCutSound();
@@ -83,9 +87,10 @@ public class MenuFruitButton : MonoBehaviour
         if (fruitCollider != null) fruitCollider.enabled = false;
         SetRenderersEnabled(false);
 
-        yield return new WaitForSeconds(0.15f);
+        // Chờ khoảng thời gian đã cấu hình (dùng Realtime để không phụ thuộc Time.timeScale)
+        yield return new WaitForSecondsRealtime(actionDelay);
 
-        // Kích hoạt sự kiện UI/GameLogic
+        // Kích hoạt sự kiện UI/GameLogic (Start Game, Chuyển Scene, Mở Popup...)
         onSliced?.Invoke();
     }
 

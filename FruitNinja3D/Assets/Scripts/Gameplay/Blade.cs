@@ -119,7 +119,7 @@ public class Blade : MonoBehaviour
         {
             comboTimer -= Time.deltaTime;
 
-            // Nếu quá thời gian comboTimeout mà không chém thêm trái cây -> Kết thúc Combo & Ngắt âm thanh lập tức
+            // Quá thời gian chờ (0.8s) mà không chém quả tiếp theo -> Ngắt Combo & Dừng nhạc lập tức
             if (comboTimer <= 0f)
             {
                 EndCombo();
@@ -173,7 +173,7 @@ public class Blade : MonoBehaviour
             bladeSparkles.Stop();
         }
 
-        // ✨ Dừng hành động chém/buông tay -> Tắt âm thanh Combo ngay lập tức
+        // ✨ Buông chuột/thả tay -> Dừng Combo & Tắt nhạc Combo ngay lập tức
         EndCombo();
     }
 
@@ -204,13 +204,14 @@ public class Blade : MonoBehaviour
         bladeRigidbody.position = newPosition;
     }
 
-    // ✨ GỌI HÀM NÀY TỪ SCRIPT TRÁI CÂY (Fruit.cs / SliceManager.cs) MỖI KHI CHÉM TRÚNG 1 TRÁI CÂY
+    // ✨ GỌI HÀM NÀY MỖI KHI CHÉM TRÚNG 1 TRÁI CÂY (Fruit.cs)
     public void OnSliceFruit()
     {
         comboCount++;
-        comboTimer = comboTimeout; // Reset lại bộ đếm thời gian cho đợt chém tiếp theo
+        comboTimer = comboTimeout; // Reset bộ đếm thời gian duy trì chuỗi Combo
 
-        // Khi chém liên tiếp từ 2 trái cây trở lên -> Kích hoạt nhạc Combo chạy lặp
+        // Chém từ 2 trái trở lên: Gọi PlayComboLoop()
+        // Nhờ cập nhật trong AudioManager, âm thanh sẽ tiếp tục phát mượt mà không bị ngắt hay tua lại từ đầu
         if (comboCount >= 2)
         {
             isComboActive = true;
@@ -227,7 +228,7 @@ public class Blade : MonoBehaviour
             comboCount = 0;
             comboTimer = 0f;
 
-            // Dừng ngay lập tức âm thanh Combo
+            // Cắt âm thanh Combo ngay lập tức
             AudioManager.Instance?.StopComboSound();
         }
     }

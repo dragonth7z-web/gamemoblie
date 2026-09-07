@@ -42,6 +42,9 @@ public class GameManager : MonoBehaviour
     private int score = 0;
     private int highScore = 0;
 
+    // ✨ PROPERTY GIÚP SPAWNER ĐỌC ĐƯỢC ĐIỂM SỐ DỄ DÀNG
+    public int Score => score;
+
     // Quản lý Combo
     private int fruitsSlicedInCurrentStroke = 0;
     private float strokeTimer = 0f;

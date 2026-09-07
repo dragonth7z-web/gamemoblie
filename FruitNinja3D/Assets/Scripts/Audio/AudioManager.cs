@@ -133,17 +133,19 @@ public class AudioManager : MonoBehaviour
     // QUẢN LÝ RIÊNG ÂM THANH COMBO (HỖ TRỢ LOOP VÀ NGẮT TỨC THÌ)
     // -------------------------------------------------------------
     
-    // Phát nhạc Combo liên tục khi người chơi đang duy trì chuỗi chém
+    // ✨ Phát tiếp âm thanh Combo đang dở, không reset lại từ đầu mỗi khi chém trúng quả tiếp theo
     public void PlayComboLoop()
     {
         if (comboSound == null) return;
 
         if (comboSource != null)
         {
+            // Chỉ bắt đầu phát nếu audio đang DỪNG.
+            // Nếu audio ĐANG PHÁT -> Bỏ qua để nhạc tiếp tục chạy liền mạch.
             if (!comboSource.isPlaying)
             {
                 comboSource.clip = comboSound;
-                comboSource.loop = true; // Cho phép chạy ngầm liên tục không bị đứt đoạn
+                comboSource.loop = true;
                 comboSource.pitch = 1.0f;
                 comboSource.Play();
             }
