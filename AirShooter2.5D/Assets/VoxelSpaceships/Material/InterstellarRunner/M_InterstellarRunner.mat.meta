@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a7dd3993cda068f469715cf6b5202c12
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/InterstellarRunner/M_InterstellarRunner.mat
+  uploadId: 435691

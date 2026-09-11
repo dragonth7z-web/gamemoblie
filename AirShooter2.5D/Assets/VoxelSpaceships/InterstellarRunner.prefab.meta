@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: aacd8e98f912e224d877de73f462a954
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/InterstellarRunner.prefab
+  uploadId: 435691

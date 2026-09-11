@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 4c50a61f402ee1d42b70e513b53515c4
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/StarMarineTrooper.prefab
+  uploadId: 435691

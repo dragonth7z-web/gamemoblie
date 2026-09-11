@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 982a6f2de1e01d64c8957ee826062960
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/Transtellar/M_Transtellar.mat
+  uploadId: 435691

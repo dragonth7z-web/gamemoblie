@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c0b37996ffe95114e80c6adea325797f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/CamoStellarJet/M_CamoStellarJet.mat
+  uploadId: 435691

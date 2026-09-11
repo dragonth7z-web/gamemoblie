@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ea16df54aaa7c274bbf2c3c4163715be
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/RedFighter/M_RedRighter.mat
+  uploadId: 435691

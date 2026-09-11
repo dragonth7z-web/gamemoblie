@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 47d6e26064c380e4b8cfd3e64e9287e8
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/CamoStellarJet.prefab
+  uploadId: 435691

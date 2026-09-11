@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 5e5c568d97e053d4e98d8d98e7f1713b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/DualStriker.prefab
+  uploadId: 435691

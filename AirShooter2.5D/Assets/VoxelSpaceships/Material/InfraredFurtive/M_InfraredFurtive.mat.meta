@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 05f51c506bfbe5a45abdec9e357dc992
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/InfraredFurtive/M_InfraredFurtive.mat
+  uploadId: 435691

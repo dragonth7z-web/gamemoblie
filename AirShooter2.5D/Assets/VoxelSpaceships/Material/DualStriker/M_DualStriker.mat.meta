@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b2330b5107038b34f99ab1d7f3e852b2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/DualStriker/M_DualStriker.mat
+  uploadId: 435691

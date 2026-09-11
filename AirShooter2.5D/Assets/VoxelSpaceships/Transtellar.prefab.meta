@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7b9930a60c77bb44aa1873138829bafb
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Transtellar.prefab
+  uploadId: 435691

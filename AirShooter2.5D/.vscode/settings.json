@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "AirShooter2D.slnx"
+    "dotnet.defaultSolution": "AirShooter2.5D.slnx"
 }

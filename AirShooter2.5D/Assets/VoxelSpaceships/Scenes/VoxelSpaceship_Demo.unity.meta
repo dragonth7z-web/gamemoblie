@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9f7db8c718ef83e4ead5878e00f40bb1
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Scenes/VoxelSpaceship_Demo.unity
+  uploadId: 435691

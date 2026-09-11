@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 5f1f7afdd7f003948961173fe7d73991
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/MeteorSlicer.prefab
+  uploadId: 435691

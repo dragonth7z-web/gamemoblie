@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 43b9fac5d0f1c494cb4a723b77a7114d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/UltravioletIntruder/M_UltravioletIntruder.mat
+  uploadId: 435691

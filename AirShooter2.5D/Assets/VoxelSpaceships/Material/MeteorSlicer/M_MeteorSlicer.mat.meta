@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d92916508b4102c418f082d31a0b4786
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/MeteorSlicer/M_MeteorSlicer.mat
+  uploadId: 435691

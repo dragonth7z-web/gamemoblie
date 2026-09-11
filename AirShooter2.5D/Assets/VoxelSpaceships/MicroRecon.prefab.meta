@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e073dfcd138f6174b8570ffd628e29ee
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/MicroRecon.prefab
+  uploadId: 435691

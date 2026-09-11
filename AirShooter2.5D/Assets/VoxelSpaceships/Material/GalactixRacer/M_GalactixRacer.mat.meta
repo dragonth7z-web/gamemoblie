@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 846079b8dd87706469f55ef8f81e5d79
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/GalactixRacer/M_GalactixRacer.mat
+  uploadId: 435691

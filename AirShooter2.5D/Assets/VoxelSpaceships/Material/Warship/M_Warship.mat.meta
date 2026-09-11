@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 121d6533cc4089e44b1d91035d6a1201
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/Warship/M_Warship.mat
+  uploadId: 435691

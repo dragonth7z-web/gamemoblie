@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a93cdee087609aa4fb677c35e7ded6e6
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 196226
+  packageName: 3D Voxel Spaceships
+  packageVersion: 1.0
+  assetPath: Assets/VoxelSpaceships/Material/StarMarineTrooper/M_StarMarineTrooper.mat
+  uploadId: 435691
