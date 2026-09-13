@@ -210,9 +210,9 @@ public class Blade : MonoBehaviour
         comboCount++;
         comboTimer = comboTimeout; // Reset bộ đếm thời gian duy trì chuỗi Combo
 
-        // Chém từ 2 trái trở lên: Gọi PlayComboLoop()
-        // Nhờ cập nhật trong AudioManager, âm thanh sẽ tiếp tục phát mượt mà không bị ngắt hay tua lại từ đầu
-        if (comboCount >= 2)
+        // Chỉ phát nhạc Combo khi chuỗi chém thực sự đạt ngưỡng hợp lệ.
+        // Tránh tiếng combo xuất hiện sớm ở lần chém thứ 2, trước khi UI combo / bonus được xác nhận.
+        if (comboCount >= 4)
         {
             isComboActive = true;
             AudioManager.Instance?.PlayComboLoop();

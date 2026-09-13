@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 6880701099973719520}
   - component: {fileID: 2945675234135646299}
   - component: {fileID: 4145970002845961814}
-  - component: {fileID: 8390137900224509913}
+  - component: {fileID: 7423528677279330419}
+  - component: {fileID: 5713145040696835477}
   m_Layer: 6
   m_Name: Egg_Whole
   m_TagString: Fruit
@@ -141,7 +142,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.05
   m_Center: {x: 0.0000000018626451, y: -0.0001392886, z: -0.0000000018626451}
---- !u!114 &8390137900224509913
+--- !u!114 &7423528677279330419
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -155,10 +156,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Fruit
   slicedFruitPrefab: {fileID: 8460029382796230368, guid: 43777ed895043aa419a9fe06180915a5, type: 3}
   splashEffectPrefab: {fileID: 6031072768427354114, guid: 803d7ffb2ef6dd748a8a1ae9d9a2fd0f, type: 3}
-  splashColor: {r: 0.50980395, g: 0.52156866, b: 0.5294118, a: 1}
-  explosionForce: 150
-  explosionRadius: 3
-  scoreValue: 20
+  splashColor: {r: 0.3735848, g: 0.36301166, b: 0.36301166, a: 1}
+  explosionForce: 5
+  explosionRadius: 3.5
+  scoreValue: 1
+  isSpecialFruit: 0
+  destroyYBoundary: -6
+  safeTimeBeforeCheckDrop: 0.5
+--- !u!114 &5713145040696835477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4935335245361517621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a926e8c0ff115b5458f3bc1eff31eb1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fruit
+  slicedFruitPrefab: {fileID: 0}
+  splashEffectPrefab: {fileID: 0}
+  splashColor: {r: 1, g: 0, b: 0, a: 1}
+  explosionForce: 180
+  explosionRadius: 3.5
+  scoreValue: 1
   isSpecialFruit: 0
   destroyYBoundary: -6
   safeTimeBeforeCheckDrop: 0.5

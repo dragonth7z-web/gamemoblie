@@ -42,7 +42,6 @@ public class GameManager : MonoBehaviour
     private int score = 0;
     private int highScore = 0;
 
-    // ✨ PROPERTY GIÚP SPAWNER ĐỌC ĐƯỢC ĐIỂM SỐ DỄ DÀNG
     public int Score => score;
 
     // Quản lý Combo
@@ -56,14 +55,29 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 
     private void Start()
     {
         highScore = PlayerPrefs.GetInt("HighScore", 0);
-        ChangeState(GameState.Menu); // Bắt đầu game ở màn hình Menu
+        ChangeState(GameState.Menu);
     }
 
     private void Update()
@@ -78,9 +92,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // -------------------------------------------------------------
-    // QUẢN LÝ TẬP TRUNG TRẠNG THÁI GAME & ÂM THANH
-    // -------------------------------------------------------------
     public void ChangeState(GameState newState)
     {
         CurrentState = newState;
@@ -90,26 +101,25 @@ public class GameManager : MonoBehaviour
         if (pausePanel != null) pausePanel.SetActive(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
 
-        // Đảm bảo đóng sạch các Popup phụ
-        MenuManager.Instance?.CloseAllPanels();
+        // Đảm bảo đóng sạch các Popup phụ thông qua MenuManager an toàn tuyệt đối
+        if (MenuManager.Instance != null)
+        {
+            MenuManager.Instance.CloseAllPopups();
+        }
 
         switch (newState)
         {
             case GameState.Menu:
                 Time.timeScale = 1f;
                 if (menuPanel != null) menuPanel.SetActive(true);
-                SetMenuFruitsActive(true); // Hiện các quả Menu
-
-                // 🎵 Bật Nhạc Menu Mở Đầu
+                SetMenuFruitsActive(true);
                 AudioManager.Instance?.PlayMenuMusic();
                 break;
 
             case GameState.Playing:
                 Time.timeScale = 1f;
                 if (playingHUDPanel != null) playingHUDPanel.SetActive(true);
-                SetMenuFruitsActive(false); // Ẩn hoàn toàn các quả Menu
-
-                // 🎵 Bật Nhạc Nền Trò Chơi
+                SetMenuFruitsActive(false);
                 AudioManager.Instance?.PlayGameplayMusic();
                 break;
 
@@ -124,16 +134,12 @@ public class GameManager : MonoBehaviour
                 if (finalScoreText != null) finalScoreText.text = $"Score: {score}";
                 if (finalHighScoreText != null) finalHighScoreText.text = $"Best: {highScore}";
 
-                // 🔊 Phát tiếng Thua Game (SFX) & Nhạc Game Over
                 AudioManager.Instance?.PlayGameOverSound();
                 AudioManager.Instance?.PlayGameOverMusic();
                 break;
         }
     }
 
-    // -------------------------------------------------------------
-    // LOGIC CHƠI GAME & ĐIỂM SỐ
-    // -------------------------------------------------------------
     public void StartGame()
     {
         score = 0;
@@ -143,13 +149,9 @@ public class GameManager : MonoBehaviour
 
         if (comboText != null) comboText.gameObject.SetActive(false);
 
-        // 🛑 Stop toàn bộ âm thanh SFX dở dang (tiếng nổ, xè xè bom, chém gió)
         AudioManager.Instance?.StopSFX();
-
-        // 🧹 Clear sạch sẽ toàn bộ Quả, Bom, Mảnh vỡ và Hiệu ứng nổ VFX
         ClearAllActiveObjects();
 
-        // Reset độ khó spawner
         if (spawner != null) spawner.ResetDifficulty();
 
         UpdateUI();
@@ -181,7 +183,6 @@ public class GameManager : MonoBehaviour
             int bonusScore = fruitsSlicedInCurrentStroke * 2;
             score += bonusScore;
 
-            // 🔔 Phát hiệu ứng âm thanh Combo
             AudioManager.Instance?.PlayComboSound();
 
             if (comboText != null)
@@ -241,9 +242,6 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.GameOver);
     }
 
-    // -------------------------------------------------------------
-    // THAO TÁC NÚT BẤM (BUTTON EVENTS)
-    // -------------------------------------------------------------
     public void PauseGame()
     {
         if (CurrentState == GameState.Playing)
@@ -272,45 +270,44 @@ public class GameManager : MonoBehaviour
         ChangeState(GameState.Menu);
     }
 
-    // 🧹 Dọn dẹp triệt để Quả, Bom, Mảnh vỡ & VFX khi Reset/Chơi lại
     private void ClearAllActiveObjects()
     {
-        // 1. Xóa tất cả trái cây
-        Fruit[] fruits = FindObjectsByType<Fruit>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Fruit[] fruits = FindObjectsByType<Fruit>(FindObjectsInactive.Exclude);
         foreach (var f in fruits)
         {
-            Destroy(f.gameObject);
+            if (f == null) continue;
+
+            if (ObjectPooler.Instance == null || !ObjectPooler.Instance.ReturnToPool(f.gameObject))
+            {
+                if (f != null) Destroy(f.gameObject);
+            }
         }
 
-        // 2. Xóa tất cả quả bom (Nếu bạn dùng script Bomb riêng)
-        Bomb[] bombs = FindObjectsByType<Bomb>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        Bomb[] bombs = FindObjectsByType<Bomb>(FindObjectsInactive.Exclude);
         foreach (var b in bombs)
         {
-            Destroy(b.gameObject);
+            if (b == null) continue;
+
+            if (ObjectPooler.Instance == null || !ObjectPooler.Instance.ReturnToPool(b.gameObject))
+            {
+                if (b != null) Destroy(b.gameObject);
+            }
         }
 
-        // 3. Xóa các mảnh vỡ trái cây
         GameObject[] slicedParts = GameObject.FindGameObjectsWithTag("SlicedFruit");
         foreach (var part in slicedParts)
         {
-            Destroy(part);
+            if (part != null) Destroy(part);
         }
 
-        // 4. Xóa tất cả Particle System (Hoạt họa nổ bom, khói, tia lửa còn sót trên màn hình)
-        ParticleSystem[] particles = FindObjectsByType<ParticleSystem>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        foreach (var p in particles)
-        {
-            Destroy(p.gameObject);
-        }
     }
 
-    // Bật/Tắt tất cả quả Menu 3D
     private void SetMenuFruitsActive(bool isActive)
     {
-        MenuFruitButton[] menuFruits = FindObjectsByType<MenuFruitButton>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        MenuFruitButton[] menuFruits = FindObjectsByType<MenuFruitButton>(FindObjectsInactive.Include);
         foreach (var btn in menuFruits)
         {
-            btn.gameObject.SetActive(isActive);
+            if (btn != null) btn.gameObject.SetActive(isActive);
         }
     }
 
@@ -341,12 +338,15 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator PunchScale(Transform targetTransform, float targetScale, float duration)
     {
+        if (targetTransform == null) yield break;
+
         Vector3 originalScale = Vector3.one;
         Vector3 maxScaleVector = Vector3.one * targetScale;
 
         float elapsed = 0f;
         while (elapsed < duration)
         {
+            if (targetTransform == null) yield break;
             targetTransform.localScale = Vector3.Lerp(originalScale, maxScaleVector, elapsed / duration);
             elapsed += Time.unscaledDeltaTime;
             yield return null;
@@ -355,11 +355,12 @@ public class GameManager : MonoBehaviour
         elapsed = 0f;
         while (elapsed < duration)
         {
+            if (targetTransform == null) yield break;
             targetTransform.localScale = Vector3.Lerp(maxScaleVector, originalScale, elapsed / duration);
             elapsed += Time.unscaledDeltaTime;
             yield return null;
         }
 
-        targetTransform.localScale = originalScale;
+        if (targetTransform != null) targetTransform.localScale = originalScale;
     }
 }

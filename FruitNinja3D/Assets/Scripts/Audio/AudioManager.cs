@@ -40,10 +40,18 @@ public class AudioManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else
+        else if (Instance != this)
         {
             Destroy(gameObject);
             return;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
         }
     }
 
@@ -60,7 +68,7 @@ public class AudioManager : MonoBehaviour
 
     public void PlayGameplayMusic()
     {
-        PlayMusicClip(gameplayMusic, true, true);
+        PlayMusicClip(gameplayMusic, true, false);
     }
 
     public void PlayGameOverMusic()

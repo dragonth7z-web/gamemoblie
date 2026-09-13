@@ -32,7 +32,10 @@ public class MenuFruitButton : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (isSliced || !other.CompareTag("Blade")) return;
+        if (isSliced) return;
+
+        Blade blade = other.GetComponent<Blade>();
+        if (blade == null && !other.CompareTag("Blade")) return;
 
         isSliced = true;
 
@@ -59,6 +62,14 @@ public class MenuFruitButton : MonoBehaviour
         {
             Quaternion splashRotation = Quaternion.LookRotation(sliceDirection);
             GameObject splash = Instantiate(splashVFX, transform.position, splashRotation);
+
+            ParticleSystem particleSystem = splash.GetComponent<ParticleSystem>();
+            if (particleSystem != null)
+            {
+                var main = particleSystem.main;
+                main.startColor = splashColor;
+            }
+
             Destroy(splash, 2f);
         }
 

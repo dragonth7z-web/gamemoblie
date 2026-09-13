@@ -5,10 +5,14 @@ public class MenuManager : MonoBehaviour
 {
     public static MenuManager Instance { get; private set; }
 
+    [Header("UI Main Menu")]
+    public GameObject menuPanel; // Panel chính chứa các nút hoặc giao diện menu
+
     [Header("UI Popups")]
     public GameObject difficultyPanel;
     public GameObject highScorePanel;
     public GameObject settingsPanel;
+    public GameObject tutorialPanel;
 
     [Header("UI References")]
     public TextMeshProUGUI highScoreText;
@@ -16,42 +20,56 @@ public class MenuManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 
-    private void Start() => CloseAllPanels();
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
 
-    // 1. BẮT ĐẦU VÁN CHƠI
+    private void Start() => ShowMainMenuView();
+
+    // Hiển thị menu chính và ẩn các popup khác
+    public void ShowMainMenuView()
+    {
+        CloseAllPopups();
+        if (menuPanel != null) menuPanel.SetActive(true);
+    }
+
     public void StartGame()
     {
-        CloseAllPanels();
+        CloseAllPopups();
         GameManager.Instance?.StartGame();
     }
 
-    // 2. MỞ BẢNG ĐỘ KHÓ
     public void OpenDifficulty()
     {
-        CloseAllPanels();
-        if (difficultyPanel != null) difficultyPanel.SetActive(true);
+        HideMainMenuAndOpenPopup(difficultyPanel);
         UpdateDifficultyUI();
     }
 
-    public void SetDifficulty(int level) // 0: Dễ, 1: Trung bình, 2: Khó
+    public void SetDifficulty(int level) 
     {
         PlayerPrefs.SetInt("GameDifficulty", level);
         PlayerPrefs.Save();
-        Debug.Log($"Đã chọn độ khó: {level}");
-        CloseAllPanels();
+        ShowMainMenuView(); // Chọn xong quay lại menu chính và hồi sinh quả
     }
 
-    // 3. MỞ BẢNG KỶ LỤC
     public void OpenHighScore()
     {
-        CloseAllPanels();
-        if (highScorePanel == null) return;
-
-        highScorePanel.SetActive(true);
+        HideMainMenuAndOpenPopup(highScorePanel);
         int topScore = PlayerPrefs.GetInt("HighScore", 0);
         if (highScoreText != null)
         {
@@ -59,26 +77,45 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    // 4. MỞ BẢNG CÀI ĐẶT
     public void OpenSettings()
     {
-        CloseAllPanels();
-        if (settingsPanel != null) settingsPanel.SetActive(true);
+        HideMainMenuAndOpenPopup(settingsPanel);
     }
 
-    // 5. ĐÓNG BẢNG UI POPUP & HỒI PHỤC QUẢ
-    public void CloseAllPanels()
+    public void OpenTutorial()
+    {
+        HideMainMenuAndOpenPopup(tutorialPanel);
+    }
+
+    // Hàm phụ trợ để ẩn Menu chính, mở popup tương ứng
+    private void HideMainMenuAndOpenPopup(GameObject targetPopup)
+    {
+        if (menuPanel != null) menuPanel.SetActive(false);
+        CloseAllPopups();
+        if (targetPopup != null) targetPopup.SetActive(true);
+    }
+
+    // Đóng toàn bộ các popup phụ
+    public void CloseAllPopups()
     {
         if (difficultyPanel != null) difficultyPanel.SetActive(false);
         if (highScorePanel != null) highScorePanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(false);
+        if (tutorialPanel != null) tutorialPanel.SetActive(false);
 
-        // Đã sửa chính xác enum Unity 6: FindObjectsSortMode (có chữ 's')
-        MenuFruitButton[] menuButtons = FindObjectsByType<MenuFruitButton>(FindObjectsSortMode.None);
+        // Hồi sinh lại các quả menu để người chơi tiếp tục chém
+        MenuFruitButton[] menuButtons = FindObjectsByType<MenuFruitButton>(FindObjectsInactive.Include);
         foreach (var btn in menuButtons)
         {
+            if (btn == null) continue;
             btn.RespawnFruit();
         }
+    }
+
+    // Hàm gọi khi nhấn nút "Quay lại" (Back) từ các popup phụ về Menu chính
+    public void BackToMenu()
+    {
+        ShowMainMenuView();
     }
 
     private void UpdateDifficultyUI()

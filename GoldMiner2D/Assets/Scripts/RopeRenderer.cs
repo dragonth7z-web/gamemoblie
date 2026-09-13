@@ -9,6 +9,13 @@ public class RopeRenderer : MonoBehaviour
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
+        if (lineRenderer == null)
+        {
+            Debug.LogError("RopeRenderer cần một LineRenderer trên cùng GameObject.", this);
+            enabled = false;
+            return;
+        }
+
         // Đảm bảo Line Renderer luôn có đúng 2 điểm nối
         lineRenderer.positionCount = 2; 
     }

@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class HookController : MonoBehaviour
 {
@@ -9,8 +11,8 @@ public class HookController : MonoBehaviour
     public float baseRewindSpeed = 8f;
 
     [Header("Cấu hình Hiệu ứng Nổ")]
-    public GameObject explosionPrefab; // Kéo Prefab Particle hiệu ứng nổ vào đây
-    public AudioClip explosionSound;    // Kéo File âm thanh nổ vào đây
+    public GameObject explosionPrefab; 
+    public AudioClip explosionSound;    
 
     private float currentRewindSpeed;
     private bool isShooting = false;
@@ -19,10 +21,17 @@ public class HookController : MonoBehaviour
     private Vector3 hookInitialLocalPos;
     private Transform caughtItem = null;
 
-    void Start()
+    void Awake()
     {
         if (hookTransform == null && transform.childCount > 0)
             hookTransform = transform.GetChild(0);
+
+        if (hookTransform == null)
+        {
+            Debug.LogError("HookController cần một hookTransform hoặc một object con làm móc.", this);
+            enabled = false;
+            return;
+        }
 
         hookInitialLocalPos = hookTransform.localPosition;
         currentRewindSpeed = baseRewindSpeed;
@@ -30,16 +39,24 @@ public class HookController : MonoBehaviour
 
     void Update()
     {
+        // Kiểm tra an toàn GameManager
         if (GameManager.Instance == null || GameManager.Instance.currentState != GameState.Playing) return;
 
         if (!isShooting && !isRewinding)
         {
+            // Luôn gọi hàm xoay móc ở mọi khung hình khi đang rảnh
             RotateHook();
 
-            // Kiểm tra Touch cho di động hoặc Mouse/Space cho Editor
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) || CheckTouchInput())
+            // Lệnh kiểm tra nút bấm (Phím Space hoặc Click chuột trái hoặc Chạm màn hình)
+            bool isInputPressed = Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0) || CheckTouchInput();
+
+            if (isInputPressed)
             {
-                isShooting = true;
+                // Chỉ cho phép bắn móc NẾU NGƯỜI CHƠI KHÔNG BẤM VÀO GIAO DIỆN (UI)
+                if (!IsPointerOverUI())
+                {
+                    isShooting = true;
+                }
             }
         }
         else if (isShooting)
@@ -56,7 +73,7 @@ public class HookController : MonoBehaviour
             hookTransform.localPosition = Vector3.MoveTowards(
                 hookTransform.localPosition, 
                 hookInitialLocalPos, 
-                currentRewindSpeed * Time.deltaTime
+                Mathf.Max(0f, currentRewindSpeed) * Time.deltaTime
             );
 
             if (hookTransform.localPosition == hookInitialLocalPos)
@@ -64,6 +81,28 @@ public class HookController : MonoBehaviour
                 ResetHook();
             }
         }
+    }
+
+    // Hàm kiểm tra UI an toàn
+    bool IsPointerOverUI()
+    {
+        if (EventSystem.current == null) return false;
+
+        // Kiểm tra chuột PC
+        if (EventSystem.current.IsPointerOverGameObject()) return true;
+
+        // Kiểm tra cảm ứng điện thoại
+        if (Input.touchCount > 0)
+        {
+            for (int i = 0; i < Input.touchCount; i++)
+            {
+                if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(i).fingerId))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     bool CheckTouchInput()
@@ -103,7 +142,10 @@ public class HookController : MonoBehaviour
             Item item = caughtItem.GetComponent<Item>();
             if (item != null)
             {
-                GameManager.Instance.AddScore(item.scoreValue);
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.AddScore(item.scoreValue);
+                }
             }
             
             caughtItem.gameObject.SetActive(false); 
@@ -113,76 +155,77 @@ public class HookController : MonoBehaviour
 
     public void OnHookHitItem(Collider2D collider)
     {
-        if (isShooting && collider.CompareTag("Item"))
+        if (!isShooting || collider == null) return;
+
+        Item itemScript = collider.GetComponentInParent<Item>();
+        if (itemScript == null) return;
+
+        if (itemScript.isBomb)
         {
-            Item itemScript = collider.GetComponent<Item>();
-
-            if (itemScript != null && itemScript.isBomb)
-            {
-                // 1. Trừ thời gian trong GameManager
-                GameManager.Instance.DeductTime(itemScript.timePenalty);
-
-                // 2. Kích hoạt hiệu ứng nổ (Đã bỏ rung màn hình)
-                TriggerExplosion(collider.transform.position, itemScript.explosionRadius, collider.gameObject);
-
-                // 3. Thu móc về nhanh lập tức
-                currentRewindSpeed = baseRewindSpeed * 1.5f;
-                StartRewind();
-                return;
-            }
-
-            // Xử lý kéo đồ vật thông thường (Vàng, Đá...)
-            caughtItem = collider.transform;
-            caughtItem.SetParent(hookTransform);
-            caughtItem.localPosition = Vector3.zero;
-
-            if (itemScript != null)
-            {
-                currentRewindSpeed = baseRewindSpeed / itemScript.weight;
-            }
-
+            TriggerExplosion(itemScript);
+            currentRewindSpeed = baseRewindSpeed * 1.5f;
             StartRewind();
+            return;
+
         }
+
+        caughtItem = itemScript.transform;
+        caughtItem.SetParent(hookTransform);
+        caughtItem.localPosition = Vector3.zero;
+
+        currentRewindSpeed = baseRewindSpeed / Mathf.Max(0.01f, itemScript.weight);
+        StartRewind();
     }
 
-    void TriggerExplosion(Vector3 explosionPos, float radius, GameObject bombObject)
+    void TriggerExplosion(Item firstBomb)
     {
-        // 1. Sinh ra Particle hiệu ứng lửa/khói tại vị trí nổ
-        if (explosionPrefab != null)
+        var pendingBombs = new Queue<Item>();
+        var processedBombs = new HashSet<Item>();
+        pendingBombs.Enqueue(firstBomb);
+
+        while (pendingBombs.Count > 0)
         {
-            GameObject expInstance = Instantiate(explosionPrefab, explosionPos, Quaternion.identity);
-            Destroy(expInstance, 1.5f); // Tự hủy Particle sau 1.5s
-        }
+            Item bomb = pendingBombs.Dequeue();
+            if (bomb == null || !processedBombs.Add(bomb)) continue;
 
-        // 2. Phát âm thanh nổ
-        if (explosionSound != null)
-        {
-            AudioSource.PlayClipAtPoint(explosionSound, explosionPos, 1.0f);
-        }
+            Vector3 currentPosition = bomb.transform.position;
+            float currentRadius = Mathf.Max(0f, bomb.explosionRadius);
 
-        // (Đã xóa phần Camera Shake ở đây)
-
-        // 3. Tiêu diệt quả bom chính
-        Destroy(bombObject);
-
-        // 4. Quét tiêu diệt các vật phẩm xung quanh trong bán kính
-        Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(explosionPos, radius);
-        foreach (Collider2D col in objectsInRange)
-        {
-            if (col != null && col.CompareTag("Item") && col.gameObject != bombObject)
+            if (explosionPrefab != null)
             {
-                Item nearbyItem = col.GetComponent<Item>();
-                
-                // Nếu vật phẩm xung quanh cũng là Bom, kích nổ dây chuyền
-                if (nearbyItem != null && nearbyItem.isBomb)
+                GameObject effect = Instantiate(explosionPrefab, currentPosition, Quaternion.identity);
+                Destroy(effect, 1.5f);
+            }
+
+            if (explosionSound != null)
+            {
+                AudioSource.PlayClipAtPoint(explosionSound, currentPosition);
+            }
+
+            if (bomb == firstBomb && GameManager.Instance != null)
+            {
+                GameManager.Instance.DeductTime(bomb.timePenalty);
+            }
+
+            Collider2D[] objectsInRange = Physics2D.OverlapCircleAll(currentPosition, currentRadius);
+            foreach (Collider2D nearbyCollider in objectsInRange)
+            {
+                if (nearbyCollider == null || !nearbyCollider.CompareTag("Item")) continue;
+
+                Item nearbyItem = nearbyCollider.GetComponentInParent<Item>();
+                if (nearbyItem == null || nearbyItem == bomb) continue;
+
+                if (nearbyItem.isBomb)
                 {
-                    TriggerExplosion(col.transform.position, nearbyItem.explosionRadius, col.gameObject);
+                    pendingBombs.Enqueue(nearbyItem);
                 }
                 else
                 {
-                    Destroy(col.gameObject);
+                    Destroy(nearbyItem.gameObject);
                 }
             }
+
+            Destroy(bomb.gameObject);
         }
     }
 }

@@ -67,7 +67,7 @@ public class Fruit : MonoBehaviour
                     GameManager.Instance.LoseLife();
                 }
 
-                Destroy(gameObject);
+                ReturnToPool();
             }
         }
     }
@@ -75,13 +75,16 @@ public class Fruit : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameState.Playing) return;
-        if (isSliced || !other.CompareTag("Blade")) return;
+        if (isSliced) return;
+
+        Blade blade = other.GetComponent<Blade>();
+        if (blade == null && !other.CompareTag("Blade")) return;
 
         isSliced = true;
 
         Vector3 slicePosition = transform.position;
 
-        Blade blade = other.GetComponent<Blade>();
+        blade ??= other.GetComponent<Blade>();
         Quaternion sliceRotation = Quaternion.identity;
         if (blade != null && blade.direction != Vector3.zero)
         {
@@ -118,7 +121,7 @@ public class Fruit : MonoBehaviour
         }
 
         // 5. XÓA QUẢ GỐC
-        Destroy(gameObject);
+        ReturnToPool();
     }
 
     private void SpawnJuiceSplash(Vector3 position, Quaternion rotation)
@@ -179,5 +182,13 @@ public class Fruit : MonoBehaviour
         #else
             targetRb.velocity = vel;
         #endif
+    }
+
+    private void ReturnToPool()
+    {
+        if (ObjectPooler.Instance == null || !ObjectPooler.Instance.ReturnToPool(gameObject))
+        {
+            Destroy(gameObject);
+        }
     }
 }

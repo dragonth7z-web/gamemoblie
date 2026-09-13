@@ -15,16 +15,30 @@ public class Bomb : MonoBehaviour
     private float spawnTime;
     private bool isDetonated = false;
     private Rigidbody rb3D;
+    private Collider[] colliders;
+    private Renderer[] renderers;
 
     private void Awake()
     {
         rb3D = GetComponent<Rigidbody>();
+        colliders = GetComponentsInChildren<Collider>(true);
+        renderers = GetComponentsInChildren<Renderer>(true);
     }
 
     private void OnEnable()
     {
         spawnTime = Time.time;
         isDetonated = false;
+
+        foreach (Collider collider in colliders)
+        {
+            if (collider != null) collider.enabled = true;
+        }
+
+        foreach (Renderer renderer in renderers)
+        {
+            if (renderer != null) renderer.enabled = true;
+        }
 
         // Phát tiếng ngòi nổ cháy xè xè (nếu có cấu hình trong AudioManager)
         AudioManager.Instance?.PlayFuseSound();
@@ -37,7 +51,7 @@ public class Bomb : MonoBehaviour
 
         if (!isDetonated && isFalling && transform.position.y < destroyYBoundary)
         {
-            Destroy(gameObject);
+            ReturnToPool();
         }
     }
 
@@ -57,22 +71,21 @@ public class Bomb : MonoBehaviour
     {
         if (isDetonated || Time.time - spawnTime < enableDelay) return;
 
-        if (target.CompareTag("Blade"))
+        Blade blade = target != null ? target.GetComponent<Blade>() : null;
+        if (blade != null || target != null && target.CompareTag("Blade"))
         {
             isDetonated = true;
 
             // Tắt Collider ngay lập tức
-            Collider col3D = GetComponent<Collider>();
-            if (col3D != null) col3D.enabled = false;
-
-            Collider2D col2D = GetComponent<Collider2D>();
-            if (col2D != null) col2D.enabled = false;
+            foreach (Collider collider in colliders)
+            {
+                if (collider != null) collider.enabled = false;
+            }
 
             // Ẩn toàn bộ Renderer của Bom
-            Renderer[] renderers = GetComponentsInChildren<Renderer>();
-            foreach (var ren in renderers)
+            foreach (Renderer renderer in renderers)
             {
-                if (ren != null) ren.enabled = false;
+                if (renderer != null) renderer.enabled = false;
             }
 
             StartCoroutine(ExplodeSequence());
@@ -99,7 +112,15 @@ public class Bomb : MonoBehaviour
 
         GameManager.Instance?.TriggerGameOver();
 
-        Destroy(gameObject);
+        ReturnToPool();
+    }
+
+    private void ReturnToPool()
+    {
+        if (ObjectPooler.Instance == null || !ObjectPooler.Instance.ReturnToPool(gameObject))
+        {
+            Destroy(gameObject);
+        }
     }
 }
 
@@ -110,7 +131,7 @@ public static class CameraShake
     private static MonoRunner runner;
     private static Coroutine currentShakeCoroutine;
     private static Vector3 initialCamPosition;
-    private static bool isPositionSaved = false;
+    private static Camera savedCamera;
 
     public static void Shake(float duration, float magnitude)
     {
@@ -124,10 +145,10 @@ public static class CameraShake
             Object.DontDestroyOnLoad(runnerGO);
         }
 
-        if (!isPositionSaved)
+        if (savedCamera != mainCam)
         {
             initialCamPosition = mainCam.transform.localPosition;
-            isPositionSaved = true;
+            savedCamera = mainCam;
         }
 
         if (currentShakeCoroutine != null)

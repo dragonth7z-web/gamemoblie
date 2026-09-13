@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [Header("Danh sách Prefab Trái Cây")]
-    public GameObject[] fruitPrefabs;
+    [Header("Danh sách Tag Prefab Trái Cây (Khớp với ObjectPooler)")]
+    public string[] fruitPoolTags; // Thay vì mảng GameObject, ta dùng mảng Tag để gọi Pool
 
     [Header("Cấu hình Bom")]
-    [Tooltip("Kéo Prefab Bom vào đây")]
-    public GameObject bombPrefab;
+    [Tooltip("Tag của Prefab Bom trong Pool")]
+    public string bombPoolTag = "Bomb";
     [Range(0f, 1f)]
     [Tooltip("Tỉ lệ xuất hiện Bom ban đầu (Ví dụ: 0.1 = 10%)")]
     public float bombChance = 0.1f;
@@ -34,6 +34,7 @@ public class Spawner : MonoBehaviour
 
     private Coroutine spawnCoroutine;
     private int currentLevel = 0;
+    private List<Transform> availableSpawnPoints;
 
     // Lưu lại thông số ban đầu để Reset khi chơi lại (Restart)
     private float initialMinDelay;
@@ -46,7 +47,8 @@ public class Spawner : MonoBehaviour
 
     private void Awake()
     {
-        // Ghi nhớ thông số mặc định đặt từ Inspector
+        availableSpawnPoints = new List<Transform>();
+
         initialMinDelay = minDelay;
         initialMaxDelay = maxDelay;
         initialMinForce = minForce;
@@ -71,7 +73,6 @@ public class Spawner : MonoBehaviour
 
     private void Update()
     {
-        // Kiểm tra trạng thái game
         if (GameManager.Instance == null || GameManager.Instance.CurrentState != GameState.Playing) return;
         if (Time.timeScale == 0f) return;
 
@@ -81,50 +82,37 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    // ✨ HÀM XỬ LÝ TĂNG ĐỘ KHÓ THEO CÁC MỐC ĐIỂM
     private void UpdateDifficultyByScore(int currentScore)
     {
         int targetLevel = GetLevelFromScore(currentScore);
 
-        // Chỉ cập nhật khi đạt mốc Level mới
         if (targetLevel > currentLevel)
         {
             int levelGained = targetLevel - currentLevel;
             currentLevel = targetLevel;
 
-            // 1. Giảm thời gian chờ giữa các lượt bắn (Ráp dồn dập hơn)
             minDelay = Mathf.Max(0.35f, minDelay - (0.05f * levelGained));
             maxDelay = Mathf.Max(0.7f, maxDelay - (0.08f * levelGained));
-
-            // 2. Tăng lực bắn giúp quả bay cao/nhanh hơn
             minForce += 0.25f * levelGained;
             maxForce += 0.25f * levelGained;
-
-            // 3. Tăng tỷ lệ ra Bom (Tối đa 45%)
             bombChance = Mathf.Min(0.45f, bombChance + (0.025f * levelGained));
 
-            // 4. Tăng số lượng quả bắn ra cùng lúc theo từng mốc Level
             if (currentLevel >= 2) maxSpawnCount = Mathf.Max(initialMaxSpawnCount, 3);
             if (currentLevel >= 4) minSpawnCount = Mathf.Max(initialMinSpawnCount, 2);
             if (currentLevel >= 6) maxSpawnCount = Mathf.Max(maxSpawnCount, 4);
             if (currentLevel >= 8) maxSpawnCount = Mathf.Max(maxSpawnCount, 5);
-
-            Debug.Log($"[Spawner] Tăng độ khó! Level hiện tại: {currentLevel} | Score: {currentScore} | Delay: {minDelay:F2}s-{maxDelay:F2}s | BombChance: {bombChance * 100:F1}%");
         }
     }
 
-    // ✨ TÍNH CẤP ĐỘ (LEVEL) DỰA TRÊN MỐC ĐIỂM
     private int GetLevelFromScore(int score)
     {
         if (score < 1000) return 0;
-        if (score < 2000) return 1;       // Mốc 1,000
-        if (score < 5000) return 2;       // Mốc 2,000
-        if (score < 10000) return 3;      // Mốc 5,000
-        if (score < 20000) return 4;      // Mốc 10,000
-        if (score < 50000) return 5;      // Mốc 20,000
+        if (score < 2000) return 1;
+        if (score < 5000) return 2;
+        if (score < 10000) return 3;
+        if (score < 20000) return 4;
+        if (score < 50000) return 5;
 
-        // Từ 50,000 trở đi: Cứ mỗi lần gấp đôi điểm số sẽ tăng thêm 1 Level
-        // Mốc 50k (Lvl 6), 100k (Lvl 7), 200k (Lvl 8), 400k (Lvl 9), 800k (Lvl 10),...
         int baseScore = 50000;
         int levelOffset = 0;
 
@@ -158,71 +146,70 @@ public class Spawner : MonoBehaviour
             float delay = Random.Range(minDelay, maxDelay);
             yield return new WaitForSeconds(delay);
 
-            if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameState.Playing)
+            if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameState.Playing) continue;
+
+            if ((fruitPoolTags == null || fruitPoolTags.Length == 0) && string.IsNullOrEmpty(bombPoolTag))
             {
-                continue;
+                yield break;
             }
 
-            if ((fruitPrefabs == null || fruitPrefabs.Length == 0) && bombPrefab == null)
+            if (spawnPoints == null || spawnPoints.Length == 0) continue;
+            if (ObjectPooler.Instance == null)
             {
-                Debug.LogWarning("Chưa gán fruitPrefabs/bombPrefab!");
-                continue;
-            }
-
-            if (spawnPoints == null || spawnPoints.Length == 0)
-            {
-                Debug.LogWarning("Chưa gán spawnPoints!");
-                continue;
+                Debug.LogError("Spawner cần một ObjectPooler đang hoạt động.", this);
+                yield break;
             }
 
             int spawnCount = Random.Range(minSpawnCount, maxSpawnCount + 1);
-            List<Transform> availablePoints = new List<Transform>(spawnPoints);
+            availableSpawnPoints.Clear();
+            availableSpawnPoints.AddRange(spawnPoints);
 
             for (int i = 0; i < spawnCount; i++)
             {
                 if (GameManager.Instance != null && GameManager.Instance.CurrentState != GameState.Playing) break;
                 if (Time.timeScale == 0f) break;
 
-                if (availablePoints.Count == 0) availablePoints = new List<Transform>(spawnPoints);
-
-                int randomIndex = Random.Range(0, availablePoints.Count);
-                Transform spawnPoint = availablePoints[randomIndex];
-                availablePoints.RemoveAt(randomIndex);
-
-                // LOGIC CHỌN BOM HOẶC TRÁI CÂY
-                GameObject prefabToSpawn = null;
-                if (bombPrefab != null && Random.value < bombChance)
+                if (availableSpawnPoints.Count == 0)
                 {
-                    prefabToSpawn = bombPrefab;
-                }
-                else if (fruitPrefabs != null && fruitPrefabs.Length > 0)
-                {
-                    prefabToSpawn = fruitPrefabs[Random.Range(0, fruitPrefabs.Length)];
+                    availableSpawnPoints.AddRange(spawnPoints);
                 }
 
-                if (prefabToSpawn == null) continue;
+                int randomIndex = Random.Range(0, availableSpawnPoints.Count);
+                Transform spawnPoint = availableSpawnPoints[randomIndex];
+                availableSpawnPoints.RemoveAt(randomIndex);
+
+                // ✨ THAY THẾ INSTANTIATE BẰNG OBJECT POOLER
+                string poolTagToSpawn = "";
+                bool isBomb = (!string.IsNullOrEmpty(bombPoolTag) && Random.value < bombChance);
+
+                if (isBomb)
+                {
+                    poolTagToSpawn = bombPoolTag;
+                }
+                else if (fruitPoolTags != null && fruitPoolTags.Length > 0)
+                {
+                    poolTagToSpawn = fruitPoolTags[Random.Range(0, fruitPoolTags.Length)];
+                }
+
+                if (string.IsNullOrEmpty(poolTagToSpawn)) continue;
 
                 Vector3 spawnPos = new Vector3(spawnPoint.position.x, spawnPoint.position.y, 0f);
-                GameObject spawnedObject = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+                
+                // Gọi từ Pool thay vì tạo mới
+                GameObject spawnedObject = ObjectPooler.Instance.SpawnFromPool(poolTagToSpawn, spawnPos, Quaternion.identity);
 
-                // Rigidbody 3D
-                Rigidbody rb = spawnedObject.GetComponent<Rigidbody>();
-                if (rb != null)
+                if (spawnedObject != null)
                 {
-                    rb.constraints = RigidbodyConstraints.FreezePositionZ;
-                    Vector3 force = spawnPoint.up * Random.Range(minForce, maxForce);
-                    rb.AddForce(force, ForceMode.Impulse);
-                    rb.AddTorque(Random.insideUnitSphere * 2f, ForceMode.Impulse);
-                }
-                else
-                {
-                    // Rigidbody 2D
-                    Rigidbody2D rb2d = spawnedObject.GetComponent<Rigidbody2D>();
-                    if (rb2d != null)
+                    // Rigidbody 3D
+                    Rigidbody rb = spawnedObject.GetComponent<Rigidbody>();
+                    if (rb != null)
                     {
-                        Vector2 force2D = spawnPoint.up * Random.Range(minForce, maxForce);
-                        rb2d.AddForce(force2D, ForceMode2D.Impulse);
-                        rb2d.AddTorque(Random.Range(-2f, 2f), ForceMode2D.Impulse);
+                        rb.linearVelocity = Vector3.zero; // Unity 6: Dùng linearVelocity thay cho velocity cũ nếu cần
+                        rb.angularVelocity = Vector3.zero;
+                        rb.constraints = RigidbodyConstraints.FreezePositionZ;
+                        Vector3 force = spawnPoint.up * Random.Range(minForce, maxForce);
+                        rb.AddForce(force, ForceMode.Impulse);
+                        rb.AddTorque(Random.insideUnitSphere * 2f, ForceMode.Impulse);
                     }
                 }
 
@@ -231,7 +218,6 @@ public class Spawner : MonoBehaviour
         }
     }
 
-    // ✨ HÀM RESET VỀ CÀI ĐẶT BAN ĐẦU KHI RESTART GAME
     public void ResetDifficulty()
     {
         currentLevel = 0;

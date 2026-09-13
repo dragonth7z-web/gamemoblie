@@ -24,7 +24,14 @@ public class ItemSpawner : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void SpawnItemsForLevel(int level)
@@ -55,6 +62,8 @@ public class ItemSpawner : MonoBehaviour
             if (IsValidPosition(randomPos, minDistance))
             {
                 GameObject prefabToSpawn = SelectPrefabByLevel(rockSpawnRatio, diamondRatio, randomPos.y);
+                if (prefabToSpawn == null) continue;
+
                 GameObject newItem = Instantiate(prefabToSpawn, randomPos, Quaternion.identity, transform);
 
                 // Lấy giá trị điểm của Item vừa sinh ra
@@ -95,7 +104,7 @@ public class ItemSpawner : MonoBehaviour
     {
         foreach (GameObject item in activeItems)
         {
-            if (item != null && Vector3.Distance(pos, item.transform.position) < minDist)
+            if (item != null && (pos - item.transform.position).sqrMagnitude < minDist * minDist)
             {
                 return false;
             }

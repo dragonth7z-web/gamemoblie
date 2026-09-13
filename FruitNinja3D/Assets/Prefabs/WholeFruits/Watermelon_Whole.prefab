@@ -92,7 +92,7 @@ PrefabInstance:
       addedObject: {fileID: 1367887950309378239}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 63880a8e4dec7364a9518ae02e49f3d6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 27526612757275185}
+      addedObject: {fileID: -6123416759346668743}
   m_SourcePrefab: {fileID: 100100000, guid: 63880a8e4dec7364a9518ae02e49f3d6, type: 3}
 --- !u!1 &3785089469163264598 stripped
 GameObject:
@@ -147,7 +147,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.1
   m_Center: {x: 0.00032139942, y: 0.103568755, z: 0}
---- !u!114 &27526612757275185
+--- !u!114 &-6123416759346668743
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -161,10 +161,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Fruit
   slicedFruitPrefab: {fileID: 1035558807637328797, guid: b4e0470eb86c38f468c38655ca6e6f72, type: 3}
   splashEffectPrefab: {fileID: 6031072768427354114, guid: 803d7ffb2ef6dd748a8a1ae9d9a2fd0f, type: 3}
-  splashColor: {r: 0.8627452, g: 0.07843138, b: 0.2352941, a: 1}
-  explosionForce: 150
-  explosionRadius: 3
-  scoreValue: 10
+  splashColor: {r: 1, g: 0, b: 0, a: 1}
+  explosionForce: 5
+  explosionRadius: 3.5
+  scoreValue: 1
   isSpecialFruit: 0
   destroyYBoundary: -6
   safeTimeBeforeCheckDrop: 0.5
