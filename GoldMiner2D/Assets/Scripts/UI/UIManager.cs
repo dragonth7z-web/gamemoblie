@@ -105,6 +105,11 @@ public class UIManager : MonoBehaviour
 
     public void OnClickOpenHowToPlay()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         if (howToPlayPanel != null)
         {
             howToPlayPanel.SetActive(true);
@@ -114,6 +119,11 @@ public class UIManager : MonoBehaviour
 
     public void OnClickCloseHowToPlay()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         if (howToPlayPanel != null)
         {
             howToPlayPanel.SetActive(false);
@@ -123,6 +133,11 @@ public class UIManager : MonoBehaviour
 
     public void OnClickPlay() 
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.StartLevel(1); 
@@ -131,6 +146,11 @@ public class UIManager : MonoBehaviour
 
     public void OnClickNextLevel() 
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.NextLevel();
@@ -139,6 +159,11 @@ public class UIManager : MonoBehaviour
 
     public void OnClickRestart() 
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayClick();
+        }
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RestartGame(); 

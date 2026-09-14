@@ -15,7 +15,30 @@ public class Item : MonoBehaviour
     public GameObject explosionPrefab; // Kéo Prefab Particle hiệu ứng nổ vào đây
     public AudioClip explosionSound;    // Âm thanh nổ
 
+    [HideInInspector]
+    public GameObject sourcePrefab;     // Dùng cho Object Pooling
+
     private bool hasExploded = false;
+
+    public void OnSpawnFromPool()
+    {
+        hasExploded = false;
+        if (TryGetComponent<Rigidbody2D>(out var rb))
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+    }
+
+    public void OnReturnToPool()
+    {
+        hasExploded = false;
+        if (TryGetComponent<Rigidbody2D>(out var rb))
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+    }
 
     // Gọi hàm này khi Móc Kéo chạm vào quả Bom
     public void TriggerExplosion()
@@ -26,13 +49,34 @@ public class Item : MonoBehaviour
         // 1. Tạo hiệu ứng hình ảnh (Particle System)
         if (explosionPrefab != null)
         {
-            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            if (ItemSpawner.Instance != null)
+            {
+                ItemSpawner.Instance.GetPooledEffect(explosionPrefab, transform.position, Quaternion.identity, 1.5f);
+            }
+            else
+            {
+                Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            }
         }
 
         // 2. Phát âm thanh nổ
-        if (explosionSound != null)
+        if (explosionSound != null || (AudioManager.Instance != null && AudioManager.Instance.bombExplosionSound != null))
         {
-            AudioSource.PlayClipAtPoint(explosionSound, transform.position, 1.0f);
+            if (AudioManager.Instance != null)
+            {
+                if (AudioManager.Instance.bombExplosionSound != null)
+                {
+                    AudioManager.Instance.PlaySFX(AudioManager.Instance.bombExplosionSound);
+                }
+                else
+                {
+                    AudioManager.Instance.PlaySFX(explosionSound);
+                }
+            }
+            else
+            {
+                AudioSource.PlayClipAtPoint(explosionSound != null ? explosionSound : AudioManager.Instance.bombExplosionSound, transform.position, 1.0f);
+            }
         }
 
         // (Đã xóa hiệu ứng rung camera ở đây theo yêu cầu)
@@ -59,14 +103,28 @@ public class Item : MonoBehaviour
                     }
                     else
                     {
-                        Destroy(hit.gameObject);
+                        if (ItemSpawner.Instance != null)
+                        {
+                            ItemSpawner.Instance.ReturnToPool(hit.gameObject);
+                        }
+                        else
+                        {
+                            Destroy(hit.gameObject);
+                        }
                     }
                 }
             }
         }
 
         // 6. Xóa chính quả bom này
-        Destroy(gameObject);
+        if (ItemSpawner.Instance != null)
+        {
+            ItemSpawner.Instance.ReturnToPool(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     // Vẽ bán kính nổ trong Scene View để dễ căn chỉnh

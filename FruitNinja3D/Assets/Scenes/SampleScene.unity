@@ -6377,12 +6377,12 @@ MonoBehaviour:
   - {fileID: 1534011666}
   - {fileID: 2009409831}
   fullHeartSprite: {fileID: 21300000, guid: 6b68512e8ede9f447afc99265351e711, type: 3}
-  emptyHeartSprite: {fileID: 0}
+  emptyHeartSprite: {fileID: 21300000, guid: 6b68512e8ede9f447afc99265351e711, type: 3}
   finalScoreText: {fileID: 783704391}
   finalHighScoreText: {fileID: 2010542639}
   maxLives: 3
   comboWindow: 0.25
-  spawner: {fileID: 0}
+  spawner: {fileID: 656476575}
 --- !u!4 &1260107879
 Transform:
   m_ObjectHideFlags: 0

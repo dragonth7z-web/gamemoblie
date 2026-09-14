@@ -20,7 +20,9 @@ public class ItemSpawner : MonoBehaviour
     public float minY = -4.5f;
     public float maxY = 1.0f;
 
-    private List<GameObject> activeItems = new List<GameObject>();
+    private readonly List<GameObject> activeItems = new List<GameObject>();
+    private readonly Dictionary<GameObject, Queue<GameObject>> pooledItems = new Dictionary<GameObject, Queue<GameObject>>();
+    private readonly Dictionary<GameObject, GameObject> sourcePrefabs = new Dictionary<GameObject, GameObject>();
 
     void Awake()
     {
@@ -64,7 +66,7 @@ public class ItemSpawner : MonoBehaviour
                 GameObject prefabToSpawn = SelectPrefabByLevel(rockSpawnRatio, diamondRatio, randomPos.y);
                 if (prefabToSpawn == null) continue;
 
-                GameObject newItem = Instantiate(prefabToSpawn, randomPos, Quaternion.identity, transform);
+                GameObject newItem = GetPooledItem(prefabToSpawn, randomPos);
 
                 // Lấy giá trị điểm của Item vừa sinh ra
                 Item itemScript = newItem.GetComponent<Item>();
@@ -112,18 +114,109 @@ public class ItemSpawner : MonoBehaviour
         return true;
     }
 
+    public GameObject GetPooledItem(GameObject prefab, Vector3 position)
+    {
+        if (prefab == null) return null;
+
+        if (!pooledItems.TryGetValue(prefab, out Queue<GameObject> poolQueue))
+        {
+            poolQueue = new Queue<GameObject>();
+            pooledItems[prefab] = poolQueue;
+        }
+
+        GameObject item = poolQueue.Count > 0 ? poolQueue.Dequeue() : Instantiate(prefab, transform);
+        sourcePrefabs[item] = prefab;
+
+        item.transform.SetParent(transform);
+        item.transform.position = position;
+        item.transform.rotation = Quaternion.identity;
+        item.SetActive(true);
+
+        Item itemScript = item.GetComponent<Item>();
+        if (itemScript != null)
+        {
+            itemScript.sourcePrefab = prefab;
+            itemScript.OnSpawnFromPool();
+        }
+
+        return item;
+    }
+
+    public GameObject GetPooledEffect(GameObject prefab, Vector3 position, Quaternion rotation, float duration)
+    {
+        GameObject effect = GetPooledItem(prefab, position);
+        if (effect == null) return null;
+
+        effect.transform.rotation = rotation;
+        StartCoroutine(ReturnEffectAfterDelay(effect, duration));
+        return effect;
+    }
+
+    private System.Collections.IEnumerator ReturnEffectAfterDelay(GameObject effect, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (effect != null) ReturnToPool(effect);
+    }
+
+    public void ReturnToPool(GameObject item)
+    {
+        if (item == null) return;
+
+        Item itemScript = item.GetComponent<Item>();
+        if (itemScript != null)
+        {
+            itemScript.OnReturnToPool();
+        }
+
+        item.SetActive(false);
+        item.transform.SetParent(transform);
+
+        GameObject prefab = itemScript != null ? itemScript.sourcePrefab : null;
+        if (prefab == null) sourcePrefabs.TryGetValue(item, out prefab);
+        if (prefab == null)
+        {
+            prefab = item; // fallback: don't pool unknown objects
+        }
+
+        if (prefab != null && prefab != item)
+        {
+            if (!pooledItems.TryGetValue(prefab, out Queue<GameObject> poolQueue))
+            {
+                poolQueue = new Queue<GameObject>();
+                pooledItems[prefab] = poolQueue;
+            }
+
+            if (!poolQueue.Contains(item))
+            {
+                poolQueue.Enqueue(item);
+            }
+        }
+
+        activeItems.Remove(item);
+    }
+
     public void ClearCurrentItems()
     {
-        foreach (GameObject item in activeItems)
+        while (activeItems.Count > 0)
         {
-            if (item != null) Destroy(item);
+            GameObject item = activeItems[activeItems.Count - 1];
+            if (item != null)
+            {
+                ReturnToPool(item);
+            }
+            else
+            {
+                activeItems.RemoveAt(activeItems.Count - 1);
+            }
         }
-        activeItems.Clear();
 
         GameObject[] leftoverItems = GameObject.FindGameObjectsWithTag("Item");
         foreach (GameObject extra in leftoverItems)
         {
-            Destroy(extra);
+            if (extra != null && extra.activeInHierarchy)
+            {
+                ReturnToPool(extra);
+            }
         }
     }
 }

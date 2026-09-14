@@ -77,6 +77,26 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 1f;
         }
 
+        if (AudioManager.Instance != null)
+        {
+            if (newState == GameState.Menu)
+            {
+                AudioManager.Instance.PlayMusic(AudioManager.Instance.bgmMenu);
+            }
+            else if (newState == GameState.Playing)
+            {
+                AudioManager.Instance.PlayMusic(AudioManager.Instance.bgmPlaying);
+            }
+            else if (newState == GameState.LevelComplete)
+            {
+                AudioManager.Instance.PlayWin();
+            }
+            else if (newState == GameState.GameOver)
+            {
+                AudioManager.Instance.PlayLose();
+            }
+        }
+
         if (UIManager.Instance != null)
         {
             UIManager.Instance.ShowScreen(newState);
@@ -110,6 +130,11 @@ public class GameManager : MonoBehaviour
         
         currentState = GameState.Playing;
         isGameActive = true;
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayMusic(AudioManager.Instance.bgmPlaying);
+        }
 
         if (ItemSpawner.Instance != null)
         {

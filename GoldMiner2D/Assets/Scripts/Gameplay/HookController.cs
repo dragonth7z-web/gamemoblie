@@ -55,6 +55,10 @@ public class HookController : MonoBehaviour
                 // Chỉ cho phép bắn móc NẾU NGƯỜI CHƠI KHÔNG BẤM VÀO GIAO DIỆN (UI)
                 if (!IsPointerOverUI())
                 {
+                    if (AudioManager.Instance != null)
+                    {
+                        AudioManager.Instance.PlayHookShoot();
+                    }
                     isShooting = true;
                 }
             }
@@ -146,9 +150,21 @@ public class HookController : MonoBehaviour
                 {
                     GameManager.Instance.AddScore(item.scoreValue);
                 }
+
+                if (AudioManager.Instance != null)
+                {
+                    AudioManager.Instance.PlayCatchItem();
+                }
             }
             
-            caughtItem.gameObject.SetActive(false); 
+            if (ItemSpawner.Instance != null)
+            {
+                ItemSpawner.Instance.ReturnToPool(caughtItem.gameObject);
+            }
+            else
+            {
+                caughtItem.gameObject.SetActive(false);
+            }
             caughtItem = null;
         }
     }
@@ -193,13 +209,34 @@ public class HookController : MonoBehaviour
 
             if (explosionPrefab != null)
             {
-                GameObject effect = Instantiate(explosionPrefab, currentPosition, Quaternion.identity);
-                Destroy(effect, 1.5f);
+                if (ItemSpawner.Instance != null)
+                {
+                    ItemSpawner.Instance.GetPooledEffect(explosionPrefab, currentPosition, Quaternion.identity, 1.5f);
+                }
+                else
+                {
+                    GameObject effect = Instantiate(explosionPrefab, currentPosition, Quaternion.identity);
+                    Destroy(effect, 1.5f);
+                }
             }
 
-            if (explosionSound != null)
+            if (explosionSound != null || (AudioManager.Instance != null && AudioManager.Instance.bombExplosionSound != null))
             {
-                AudioSource.PlayClipAtPoint(explosionSound, currentPosition);
+                if (AudioManager.Instance != null)
+                {
+                    if (AudioManager.Instance.bombExplosionSound != null)
+                    {
+                        AudioManager.Instance.PlaySFX(AudioManager.Instance.bombExplosionSound);
+                    }
+                    else
+                    {
+                        AudioManager.Instance.PlaySFX(explosionSound);
+                    }
+                }
+                else
+                {
+                    AudioSource.PlayClipAtPoint(explosionSound, currentPosition);
+                }
             }
 
             if (bomb == firstBomb && GameManager.Instance != null)
@@ -221,11 +258,25 @@ public class HookController : MonoBehaviour
                 }
                 else
                 {
-                    Destroy(nearbyItem.gameObject);
+                    if (ItemSpawner.Instance != null)
+                    {
+                        ItemSpawner.Instance.ReturnToPool(nearbyItem.gameObject);
+                    }
+                    else
+                    {
+                        Destroy(nearbyItem.gameObject);
+                    }
                 }
             }
 
-            Destroy(bomb.gameObject);
+            if (ItemSpawner.Instance != null)
+            {
+                ItemSpawner.Instance.ReturnToPool(bomb.gameObject);
+            }
+            else
+            {
+                Destroy(bomb.gameObject);
+            }
         }
     }
 }
