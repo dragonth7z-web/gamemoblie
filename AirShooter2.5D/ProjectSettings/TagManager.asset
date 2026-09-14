@@ -2,17 +2,18 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
-  - 
+  - Enemy
+  - Bullets
   - 
   - 
   - 
@@ -41,6 +42,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: EnemyBasic
+    uniqueID: 2233628745
+    locked: 0
+  - name: RightToLeft
+    uniqueID: 437320111
+    locked: 0
+  - name: LeftToRight
+    uniqueID: 4044856617
+    locked: 0
   m_RenderingLayers:
   - Default
   - Light Layer 1
@@ -50,27 +60,4 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  m_MigratedRenderPipelines: []
